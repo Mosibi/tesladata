@@ -1,0 +1,11 @@
+---
+username: 'your Tesla account ( email address)'
+password: 'password for your Tesla account'
+vin: 'The VIN of the car you want to poll'
+influx_server: 'influx.example.com'
+poll_interval: 60
+write_to_influx: False
+write_to_mongo: True
+mongo_server: 'mogno.example.com'
+mongo_database: 'tesla'
+debug: False
