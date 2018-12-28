@@ -6,6 +6,6 @@ influx_server: 'influx.example.com'
 poll_interval: 60
 write_to_influx: False
 write_to_mongo: True
-mongo_server: 'mogno.example.com'
+mongo_server: 'mongo.example.com'
 mongo_database: 'tesla'
 debug: False
