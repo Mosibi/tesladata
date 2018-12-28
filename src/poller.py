@@ -145,12 +145,12 @@ def poller(vehicle, last_time_sleepy, mongo_db):
                 data = {"timestamp": int(round(time.time() * 1000)), "sleepy": True, "vin": vehicle['vin']}
                 mongo_write(mongo_db, 'custom_data', data)
                 last_time_sleepy = int(time.time())
+
+                # wait 20 minutes before doing anything else
+                time.sleep(1200)
         except KeyError as endpoint_name:
             error_msg('No data received from Tesla with vin {} for endpoint {}'.format(vehicle['vin'], endpoint_name))
      
-        # wait 20 minutes before doing anything else
-        time.sleep(1200)
-    
     return last_time_sleepy
 
 
