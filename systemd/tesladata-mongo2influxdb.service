@@ -1,0 +1,6 @@
+[Unit]
+Description=Tesladata mongo2influxdb
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -u /usr/local/tesladata/mongo2influxdb.py
