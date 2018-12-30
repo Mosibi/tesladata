@@ -137,13 +137,12 @@ def get_vehicle(username, password, vin):
         pass
 
     if vehicle is None:
-        error_msg("Could not get/find vehicle information from the Tesla API")
-        sys.exit(99)
+        warning_msg("Could not get/find vehicle information from the Tesla API")
     else:
         if DEBUG is True:
             print("vehicle: {}".format(dict(vehicle)))
 
-        return vehicle
+    return vehicle
 
 
 def poller(vehicle, last_time_sleepy, mongo_db):
@@ -236,31 +235,36 @@ def main():
         mongo_db = client[config["mongo_database"]]
 
     while True:
-        # On every loop, fetch fresh vehicle information from the Tesla API.
-        vehicle = get_vehicle(config["username"], config["password"], config["vin"])
-        vehicle["timestamp"] = int(round(time.time() * 1000))
+        try:
+            # On every loop, fetch fresh vehicle information from the Tesla API.
+            vehicle = get_vehicle(config["username"], config["password"], config["vin"])
+            vehicle["timestamp"] = int(round(time.time() * 1000))
 
-        # Write 'vehicle' information in Mongo
-        mongo_write(mongo_db, "vehicle", dict(vehicle))
+            # Write 'vehicle' information in Mongo
+            mongo_write(mongo_db, "vehicle", dict(vehicle))
 
-        if vehicle["state"] == "online":
-            last_time_sleepy = poller(vehicle, last_time_sleepy, mongo_db)
-        elif vehicle["state"] == "offline":
-            info_msg("Tesla with vin {} is offline".format(vehicle["vin"]))
-            last_time_sleepy = 0
-        elif vehicle["state"] == "asleep":
-            info_msg("Tesla with vin {} is sleeping".format(vehicle["vin"]))
-            last_time_sleepy = 0
-        elif vehicle["state"] == "waking":
-            info_msg("Tesla with vin {} is waking up".format(vehicle["vin"]))
-            last_time_sleepy = 0
-        else:
-            warning_msg(
-                "Tesla with vin {} has state {}. This state is unknown to us".format(
-                    vehicle["vin"], vehicle["state"]
+            if vehicle["state"] == "online":
+                last_time_sleepy = poller(vehicle, last_time_sleepy, mongo_db)
+            elif vehicle["state"] == "offline":
+                info_msg("Tesla with vin {} is offline".format(vehicle["vin"]))
+                last_time_sleepy = 0
+            elif vehicle["state"] == "asleep":
+                info_msg("Tesla with vin {} is sleeping".format(vehicle["vin"]))
+                last_time_sleepy = 0
+            elif vehicle["state"] == "waking":
+                info_msg("Tesla with vin {} is waking up".format(vehicle["vin"]))
+                last_time_sleepy = 0
+            else:
+                warning_msg(
+                    "Tesla with vin {} has state {}. This state is unknown to us".format(
+                        vehicle["vin"], vehicle["state"]
+                    )
                 )
-            )
-            last_time_sleepy = 0
+                last_time_sleepy = 0
+        except KeyError:
+            # This can happen when we did not receive data from the Tesla API.
+            # Just accept it and try it the next time
+            pass
 
         time.sleep(config["poll_interval"])
 
