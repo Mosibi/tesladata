@@ -7,7 +7,7 @@ In the future I will also publish code that will read data from the Mongo databa
 Edit the file `config.yaml`, the entries should be self-explanatory.
 
 # Installation
-Clone this repo and install `teslajon` from https://github.com/gglockner/teslajson and follow the 'Installation' part. Then run `pip -r requirements.txt` in the tesladata directory to install the rest of the Python requirements.
+Clone this repo and install `teslajon` from https://github.com/gglockner/teslajson and follow the 'Installation' part. Then run `pip install -r requirements.txt` in the tesladata directory to install the rest of the Python requirements.
 
 Run `make install` to install Tesladata on your system and start the poller service with the command `systemctl start tesladata-poller.service`
 
