@@ -80,8 +80,14 @@ def generate_timestamp(timestamp=(time.time() * 1000), add_secs=None, min_secs=N
 
 
 def get_mongo_data(
-    server, database, collection_name, timestamp_start=None, timestamp_end=None
+    db_handle, collection_name, timestamp_start=None, timestamp_end=None
 ):
+    """
+    get_mongo_data params:
+    db_handle: a mongodb database handle
+    collection_name: a mongodb collection
+    timestamp_start and timestamp_end: timestamp in seconds (epoch)
+    """
     data = []
 
     if timestamp_start is None:
@@ -95,9 +101,7 @@ def get_mongo_data(
     if timestamp_start > timestamp_end:
         raise ValueError("start timestamp must be smaller then end timestamp")
 
-    client = MongoClient("mongodb://{}:27017/".format(server))
-    db = client[database]
-    collection = db[collection_name]
+    collection = db_handle[collection_name]
 
     try:
         documents = collection.find(

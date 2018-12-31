@@ -85,11 +85,18 @@ def charge_state(server, data):
 
 
 def sleepy_to_sleep(
-    mongo_server="localhost", mongo_database="tesla", influx_server="localhost"
+    mongo_db, influx_server="localhost"
 ):
+    """
+    sleepy_to_sleep calculates the difference in seconds between
+    the state 'sleepy' and 'asleep'
+
+    params:
+      mongo_db: a mongodb database handle
+      influx_server: the hostname of the influxdb server
+    """
     custom_data = tesladata.get_mongo_data(
-        mongo_server,
-        mongo_database,
+        mongo_db,
         "custom_data",
         timestamp_start=tesladata.generate_timestamp(min_secs=86400),
     )
@@ -99,8 +106,7 @@ def sleepy_to_sleep(
         ts_end = tesladata.generate_timestamp(timestamp=ts_start, add_secs=3600)
 
         vehicle_data = tesladata.get_mongo_data(
-            mongo_server,
-            mongo_database,
+            mongo_db,
             "vehicle",
             timestamp_start=ts_start,
             timestamp_end=ts_end,
@@ -138,9 +144,11 @@ def main():
     DEBUG = config["debug"]
     WRITE_TO_INFLUX = config["write_to_influx"]
 
+    client = tesladata.mongoclient(config["mongo_server"])
+    mongo_db = client[config["mongo_database"]]
+
     sleepy_to_sleep(
-        mongo_server=config["mongo_server"],
-        mongo_database=config["mongo_database"],
+        mongo_db=mongo_db,
         influx_server=config["influx_server"],
     )
 
@@ -148,7 +156,7 @@ def main():
         debug("Working on endpoint {}".format(endpoint))
 
         mongo_posts = tesladata.get_mongo_data(
-            config["mongo_server"], config["mongo_database"], endpoint, timestamp_start=tesladata.generate_timestamp(min_secs=300)
+            mongo_db, endpoint, timestamp_start=tesladata.generate_timestamp(min_secs=300)
         )
 
         log(
