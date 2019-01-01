@@ -15,7 +15,7 @@ def debug(msg):
 
 
 def publish_message(mqtt_client, msg, mqtt_path):
-    mqtt_client.publish(mqtt_path, payload=msg, qos=0, retain=False)
+    mqtt_client.publish(mqtt_path, payload=msg, qos=0, retain=True)
     debug(
         "published message {0} on topic {1} at {2}".format(
             msg, mqtt_path, time.asctime(time.localtime(time.time()))
