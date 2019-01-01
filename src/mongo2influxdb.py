@@ -81,7 +81,7 @@ def main():
     configfile = str(args.configfile)
     secondsback = int(args.secondsback)
 
-    config = tesladata.readconfig(configfile)
+    config = tesladata.readconfig(configfile=configfile)
     DEBUG = config["debug"]
 
     client = tesladata.mongoclient(config["mongo_server"])
@@ -95,7 +95,7 @@ def main():
         mongo_documents = tesladata.get_mongo_data(
             mongo_db,
             collection,
-            timestamp_start=tesladata.generate_timestamp(min_secs=300),
+            timestamp_start=tesladata.generate_timestamp(min_secs=secondsback),
         )
 
         log(
