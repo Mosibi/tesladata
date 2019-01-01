@@ -1,5 +1,5 @@
 # Tesladata
-This toolset polls data from the Tesla API and places it in a Mongo database.
+This toolset polls data from the Tesla API and puts it in a Mongo database.
 
 The main components of Tesladata are the poller (poller.py) and the watcher (watcher.py).
 
@@ -7,7 +7,7 @@ The main components of Tesladata are the poller (poller.py) and the watcher (wat
 The poller component reads data from the Tesla API and stores it a Mongo database.
 
 ## Watcher
-The watcher components connects to the Mongo database where the Poller stored is data and listens for updates. When a record is inserted, Watcher sends it to InfluxDB and publishes it on a MQTT topic.
+The watcher component connects to the Mongo database where the Poller stored the data and when a record is inserted, 'watcher' sends it to InfluxDB and publishes it on a MQTT topic.
 
 The data is stored in InfluxDB so that it can be plotted with Grafana and published on MQTT for integration with Home-Assistant.
 
@@ -50,7 +50,7 @@ Read data from the MongoDB and return it as JSON on stdout
 
 Usage
 ```lang=shell
-usage: mongo_get.py [-h] [--mongoserver MONGOSERVER] [--database DATABASE]
+usage: mongo-dump.py [-h] [--mongoserver MONGOSERVER] [--database DATABASE]
                     [--collection COLLECTION] [--diff]
 
 optional arguments:
