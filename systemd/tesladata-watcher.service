@@ -1,0 +1,12 @@
+[Unit]
+Description=Tesladata MongoDB Watcher
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 -u /usr/local/tesladata/mongo-watcher.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

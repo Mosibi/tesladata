@@ -4,89 +4,14 @@ import time
 import json
 import yaml
 import sys
+import argparse
 from time import gmtime, strftime
+import endpoints
 import tesladata
 from tesladata import log
 
 
-def influx_write(**kwargs):
-    if WRITE_TO_INFLUX is True:
-        tesladata.influx_write(**kwargs)
-    else:
-        log("writing to Influx is disabled", level="WARNING")
-
-
-def vehicle_state(server, data):
-    for document in data:
-        influx_write(
-            servername=server,
-            measurement="vehicle_state",
-            entity="odometer",
-            vin=document["vin"],
-            value=document["odometer"],
-            ms=document["timestamp"],
-        )
-
-
-def vehicle(server, data):
-    for document in data:
-        sleeping = 0
-
-        if document["state"] == "asleep":
-            sleeping = 1
-
-        influx_write(
-            servername=server,
-            measurement="vehicle_state",
-            entity="sleeping",
-            vin=document["vin"],
-            value=sleeping,
-            ms=document["timestamp"],
-        )
-
-
-def custom_data(server, data):
-    for document in data:
-
-        try:
-            if document["sleepy"] is True:
-                influx_write(
-                    servername=server,
-                    measurement="custom_data",
-                    entity="sleepy",
-                    vin=document["vin"],
-                    value=1,
-                    ms=document["timestamp"],
-                )
-        except KeyError:
-            pass
-
-
-def charge_state(server, data):
-    for document in data:
-
-        influx_write(
-            servername=server,
-            measurement="charge_state",
-            entity="battery_level",
-            vin=document["vin"],
-            value=document["battery_level"],
-            ms=document["timestamp"],
-        )
-
-        influx_write(
-            servername=server,
-            measurement="charge_state",
-            entity="ideal_battery_range",
-            vin=document["vin"],
-            value=float(document["ideal_battery_range"] * 1.609344),
-            ms=document["timestamp"],
-        )
-
-
-def sleepy_to_sleep(
-    mongo_db, influx_server="localhost"
-):
+def sleepy_to_sleep(mongo_db, influx_server="localhost"):
     """
     sleepy_to_sleep calculates the difference in seconds between
     the state 'sleepy' and 'asleep'
@@ -106,17 +31,14 @@ def sleepy_to_sleep(
         ts_end = tesladata.generate_timestamp(timestamp=ts_start, add_secs=3600)
 
         vehicle_data = tesladata.get_mongo_data(
-            mongo_db,
-            "vehicle",
-            timestamp_start=ts_start,
-            timestamp_end=ts_end,
+            mongo_db, "vehicle", timestamp_start=ts_start, timestamp_end=ts_end
         )
 
         for vdata in vehicle_data:
             if vdata["state"] == "asleep":
                 ts_asleep = vdata["timestamp"]
 
-                influx_write(
+                tesladata.influx_write(
                     servername=influx_server,
                     measurement="custom_data",
                     entity="sleepy_to_sleep",
@@ -138,37 +60,57 @@ def main():
     Read data from mongo and write (some of) it to InfluxDB
     """
     global DEBUG
-    global WRITE_TO_INFLUX
 
-    config = tesladata.readconfig()
+    parser = argparse.ArgumentParser(
+        description="Read data from mongo and write (some of) it to InfluxDB"
+    )
+    parser.add_argument(
+        "--configfile",
+        help="path to config.yaml",
+        required=False,
+        default="/usr/local/tesladata/config.yaml",
+    )
+    parser.add_argument(
+        "--secondsback",
+        default=3600,
+        help="fetch documents from mongo that are this seconds old and newer. default is 3600 (1 hour)",
+        required=False,
+    )
+    args = parser.parse_args()
+
+    configfile = str(args.configfile)
+    secondsback = int(args.secondsback)
+
+    config = tesladata.readconfig(configfile)
     DEBUG = config["debug"]
-    WRITE_TO_INFLUX = config["write_to_influx"]
 
     client = tesladata.mongoclient(config["mongo_server"])
     mongo_db = client[config["mongo_database"]]
 
-    sleepy_to_sleep(
-        mongo_db=mongo_db,
-        influx_server=config["influx_server"],
-    )
+    sleepy_to_sleep(mongo_db=mongo_db, influx_server=config["influx_server"])
 
-    for endpoint in ['charge_state', 'vehicle', 'custom_data', 'vehicle_state']:
-        debug("Working on endpoint {}".format(endpoint))
+    for collection in ["charge_state", "vehicle", "custom_data", "vehicle_state"]:
+        debug("Working on collection {}".format(collection))
 
-        mongo_posts = tesladata.get_mongo_data(
-            mongo_db, endpoint, timestamp_start=tesladata.generate_timestamp(min_secs=300)
+        mongo_documents = tesladata.get_mongo_data(
+            mongo_db,
+            collection,
+            timestamp_start=tesladata.generate_timestamp(min_secs=300),
         )
 
         log(
-            "Got {} messages from MongoDB for endpoint {}".format(
-                len(mongo_posts), endpoint
+            "Got {} messages from MongoDB for collection {}".format(
+                len(mongo_documents), collection
             )
         )
 
         try:
-            globals()[endpoint](config["influx_server"], mongo_posts)
+            method_to_call = getattr(endpoints, collection)
+
+            for doc in mongo_documents:
+                method_to_call(config["influx_server"], doc)
         except KeyError:
-            log("There is no function for {}".format(endpoint), level="ERROR")
+            log("There is no function for {}".format(collection), level="ERROR")
 
 
 if __name__ == "__main__":
