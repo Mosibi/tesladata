@@ -23,7 +23,7 @@ def publish_message(mqtt_client, msg, mqtt_path):
     )
 
 
-def recon():
+def recon(mqtt_client):
     try:
         mqtt_client.reconnect()
         log("Successfull reconnected to the MQTT server")
@@ -33,17 +33,17 @@ def recon():
             level="WARNING",
         )
         time.sleep(10)
-        recon()
+        recon(mqtt_client)
 
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(mqtt_client, userdata, flags, rc):
     log("Successfull reconnected to the MQTT server")
 
 
-def on_disconnect(client, userdata, rc):
+def on_disconnect(mqtt_client, userdata, rc):
     if rc != 0:
         log("Unexpected disconnection from MQTT, trying to reconnect", level="WARNING")
-        recon()
+        recon(mqtt_client)
 
 
 def main():
@@ -51,12 +51,12 @@ def main():
     Watch the 'tesla' database for changes. If a document has changed,
     call the 'write to influx' endpoint and publish the message on MQTT
     """
-    
+
     global DEBUG
 
     config = tesladata.readconfig()
     DEBUG = config["debug"]
-    
+
     mongo_client = tesladata.mongoclient(config["mongo_server"])
     tesladb = mongo_client[config["mongo_database"]]
 
@@ -74,7 +74,7 @@ def main():
             collection = document["ns"]["coll"]
             del data["_id"]
 
-            if config['publish_on_mqtt'] is True:
+            if config["publish_on_mqtt"] is True:
                 json_full_document = json.dumps(data)
                 publish_message(
                     mqtt_client=mqtt_client,
@@ -82,9 +82,17 @@ def main():
                     mqtt_path="{}/{}".format("tesla", collection),
                 )
 
-            if config['write_to_influx'] is True:
+            if config["write_to_influx"] is True:
                 method_to_call = getattr(endpoints, collection)
-                method_to_call(config["influx_server"], data)
+
+                try:
+                    method_to_call(config["influx_server"], data)
+                except AttributeError as attributeerr:
+                    log(
+                        "there is no function for {} in module endpoints".format(
+                            attributeerr
+                        )
+                    )
     except Exception as err:
         log("error: {}".format(err), level="ERROR")
 
