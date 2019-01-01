@@ -1,6 +1,30 @@
 import tesladata
 
 
+def vehicle_config(server, data):
+    pass
+
+
+def climate_state(server, data):
+    pass
+
+
+def drive_state(server, data):
+    pass
+
+
+def gui_settings(server, data):
+    pass
+
+
+def mobile_enabled(server, data):
+    pass
+
+
+def nearby_charging_sites(server, data):
+    pass
+
+
 def vehicle_state(server, data):
     tesladata.influx_write(
         servername=server,
