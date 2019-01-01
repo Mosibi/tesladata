@@ -1,11 +1,21 @@
 ---
+# Tesla credentials
 username: 'your Tesla account ( email address)'
 password: 'password for your Tesla account'
 vin: 'The VIN of the car you want to poll'
-influx_server: 'influx.example.com'
+# Common settings
 poll_interval: 60
-write_to_influx: False
-write_to_mongo: True
+debug: False
+# InfluxDB settings
+influx_server: 'influx.example.com'
+write_to_influx: True
+# MongoDB settings
 mongo_server: 'mongo.example.com'
 mongo_database: 'tesla'
-debug: False
+write_to_mongo: True
+# MQTT settings
+mqtt_server: 'mqtt.example.com'
+mqtt_username: 'mqtt username'
+mqtt_password: 'mqtt password'
+publish_on_mqtt: True
+
