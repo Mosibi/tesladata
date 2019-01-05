@@ -61,4 +61,4 @@ optional arguments:
 ```
 
 ## sleepy-to-sleeping.py
-Measures the time between state 'sleepy' and 'asleep' and inserts the results in InfluxDB. Run this minimal once per hour.
+Measures the time between state 'sleepy' and 'asleep' and inserts the results in InfluxDB. Run this once per hour, missing datapoints can be inserted by running `mongo-to-influxdb.py`
