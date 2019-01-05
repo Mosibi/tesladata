@@ -34,13 +34,13 @@ When the MongoDB is started for the first time, you need to initiate a replica s
 This replica set is needed, even if you have one MongoDB server, the Mongo function db.watch() we use, needs the MongoDB 'oplog' that is created/enabled when the recordset is initiated.
 
 # Tools
-## mongo2influxdb.py 
+## mongo-to-influxdb.py 
 Read data from MongoDB and put it in InfluxDB. Use this to (re)fill InfluxDB with missing datapoints. 
 
 Usage:
 
 ```lang=shell
-./mongo2influxdb.py --configfile </path/to/config.yaml> --secondsback <integer>
+./mongo-to-influxdb.py --configfile </path/to/config.yaml> --secondsback <integer>
 ```
 
 The `secondsback` argument is used to generate a timestamp in milliseconds which is used to fetch documents from the MongoDB that are newer than that timestamp.
@@ -59,3 +59,6 @@ optional arguments:
   --collection      the mongo collection you want to see [all]
   --diff            show difference between stored data points [False]
 ```
+
+## sleepy-to-sleeping.py
+Measures the time between state 'sleepy' and 'asleep' and inserts the results in InfluxDB. Run this minimal once per hour.

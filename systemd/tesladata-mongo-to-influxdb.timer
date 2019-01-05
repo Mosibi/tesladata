@@ -1,0 +1,9 @@
+[Unit]
+Description=Run tesladata-mongo-to-influxdb.service every minute
+
+[Timer]
+OnCalendar=*:0/1
+Unit=tesladata-mongo-to-influxdb.service
+
+[Install]
+WantedBy=timers.target

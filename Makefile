@@ -6,9 +6,10 @@ install:
 	@test -e /usr/local/tesladata || mkdir /usr/local/tesladata
 	@cp src/poller.py /usr/local/tesladata/poller.py
 	@cp src/tesladata.py /usr/local/tesladata/tesladata.py
-	@cp src/mongo2influxdb.py /usr/local/tesladata/mongo2influxdb.py
+	@cp src/mongo-to-influxdb.py /usr/local/tesladata/mongo-to-influxdb.py
 	@cp src/mongo-watcher.py /usr/local/tesladata/mongo-watcher.py
 	@cp src/endpoints.py /usr/local/tesladata/endpoints.py
+	@cp src/sleepy-to-sleeping.py /usr/local/tesladata/sleepy-to-sleeping.py
 
 	@test -e /usr/local/tesladata/config.yaml || cp config.yaml /usr/local/tesladata/config.yaml
 
@@ -19,7 +20,8 @@ install:
 	@chmod 750 /usr/local/tesladata/tesladata.py
 	@chmod 750 /usr/local/tesladata/mongo-watcher.py
 	@chmod 750 /usr/local/tesladata/endpoints.py
-	@chmod 750 /usr/local/tesladata/mongo2influxdb.py
+	@chmod 750 /usr/local/tesladata/sleepy-to-sleeping.py
+	@chmod 750 /usr/local/tesladata/mongo-to-influxdb.py
 	@chmod 640 /usr/local/tesladata/config.yaml
 	@chmod 644 /etc/systemd/system/tesladata-poller.service
 	@chmod 644 /etc/systemd/system/tesladata-watcher.service
