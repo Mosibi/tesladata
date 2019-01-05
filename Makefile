@@ -10,7 +10,7 @@ install:
 	@cp src/mongo-watcher.py /usr/local/tesladata/mongo-watcher.py
 	@cp src/endpoints.py /usr/local/tesladata/endpoints.py
 
-	@cp config.yaml /usr/local/tesladata/config.yaml
+	@test -e /usr/local/tesladata/config.yaml || cp config.yaml /usr/local/tesladata/config.yaml
 
 	@cp systemd/tesladata-poller.service /etc/systemd/system/tesladata-poller.service
 	@cp systemd/tesladata-watcher.service /etc/systemd/system/tesladata-watcher.service
