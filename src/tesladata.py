@@ -39,7 +39,7 @@ def readconfig(**kwargs):
         raise ValueError("Could not find a configuration file for Tesladata")
 
     with open(configfile, "r") as ymlfile:
-        cfg = yaml.load(ymlfile)
+        cfg = yaml.safe_load(ymlfile)
 
     return cfg
 
