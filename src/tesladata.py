@@ -237,32 +237,48 @@ def mongoclient(server):
 
 
 def get_all_cardata(vehicle):
-    endpoints = {
-        "charge_state",
-        "climate_state",
-        "drive_state",
-        "gui_settings",
-        "vehicle_state",
-        "vehicle_config",
-    }
-    data = {}
+    del_from_data = []
 
-    for endpoint in endpoints:
-        try:
-            endpoint_data = vehicle.data_request(endpoint)
-            endpoint_data["vin"] = vehicle["vin"]
+    try:
+        data = vehicle.get('data')["response"]
+    
+        for entry in data:
+            # The 'data' command returns a python dict the 'vehicle' 
+            # endpoint data in the root of the dict and the endpoints 
+            # within the endpoint name, thus
+            #
+            # response:
+            #   id:
+            #   display_name:
+            #   charge_state:
+            #     battery_level:
+            #   drive_state:
+            #     shift_state:
+            # 
+            # In the above example we only want to keep 'charge_state'
+            # and 'drive_state' since that's the endpoint data we want to
+            # return.    
+            if type(data[entry]) is dict:
+                data[entry]["vin"] = vehicle["vin"] # Add 'vin' if it is missing in an endpoint data stream
+            else:
+                # We only want to return endpoint data, other data
+                # is not of type(dict), so we remove it from the 'data' dict
+                del_from_data.append(entry)
+        
+        for item in del_from_data:
+            # The actual remove from dict is done here, python
+            # does not like it when you remove something from a
+            # dict while you are looping over that dict
+            del data[item]
 
-            data.update({endpoint: endpoint_data})
-
-        except Exception as err:
-            log(
-                "Could not get data from Tesla with vin {}: {}".format(
-                    vehicle["vin"], str(err)
-                ),
-                level="WARNING",
-            )
-
-    return data
+        return data
+    except Exception as err:
+        log(
+            "Could not get data from Tesla with vin {}: {}".format(
+                vehicle["vin"], str(err)
+            ),
+            level="WARNING",
+        )
 
 
 def sleepy_to_sleep(mongo_db, influx_server="localhost", secondsback=7200):
