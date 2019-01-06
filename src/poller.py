@@ -98,6 +98,13 @@ def poller(vehicle, last_time_sleepy, mongo_db):
                 ),
                 level="ERROR",
             )
+        except TypeError as endpoint_name:
+            log(
+                "No data received from Tesla with vin {} for endpoint {}".format(
+                    vehicle["vin"], endpoint_name
+                ),
+                level="ERROR",
+            )
 
     return last_time_sleepy
 
