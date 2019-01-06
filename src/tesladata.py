@@ -240,11 +240,11 @@ def get_all_cardata(vehicle):
     del_from_data = []
 
     try:
-        data = vehicle.get('data')["response"]
-    
+        data = vehicle.get("data")["response"]
+
         for entry in data:
-            # The 'data' command returns a python dict the 'vehicle' 
-            # endpoint data in the root of the dict and the endpoints 
+            # The 'data' command returns a python dict the 'vehicle'
+            # endpoint data in the root of the dict and the endpoints
             # within the endpoint name, thus
             #
             # response:
@@ -254,17 +254,19 @@ def get_all_cardata(vehicle):
             #     battery_level:
             #   drive_state:
             #     shift_state:
-            # 
+            #
             # In the above example we only want to keep 'charge_state'
             # and 'drive_state' since that's the endpoint data we want to
-            # return.    
+            # return.
             if type(data[entry]) is dict:
-                data[entry]["vin"] = vehicle["vin"] # Add 'vin' if it is missing in an endpoint data stream
+                data[entry]["vin"] = vehicle[
+                    "vin"
+                ]  # Add 'vin' if it is missing in an endpoint data stream
             else:
                 # We only want to return endpoint data, other data
                 # is not of type(dict), so we remove it from the 'data' dict
                 del_from_data.append(entry)
-        
+
         for item in del_from_data:
             # The actual remove from dict is done here, python
             # does not like it when you remove something from a
