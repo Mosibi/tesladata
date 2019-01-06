@@ -296,17 +296,17 @@ def sleepy_to_sleep(mongo_db, influx_server="localhost", secondsback=7200):
       mongo_db: a mongodb database handle
       influx_server: the hostname of the influxdb server
     """
-    custom_data = tesladata.get_mongo_data(
+    custom_data = get_mongo_data(
         mongo_db,
         "custom_data",
-        timestamp_start=tesladata.generate_timestamp(min_secs=secondsback),
+        timestamp_start=generate_timestamp(min_secs=secondsback),
     )
 
     for doc in custom_data:
         ts_start = doc["timestamp"]
-        ts_end = tesladata.generate_timestamp(timestamp=ts_start, add_secs=3600)
+        ts_end = generate_timestamp(timestamp=ts_start, add_secs=3600)
 
-        vehicle_data = tesladata.get_mongo_data(
+        vehicle_data = get_mongo_data(
             mongo_db, "vehicle", timestamp_start=ts_start, timestamp_end=ts_end
         )
 
@@ -314,7 +314,7 @@ def sleepy_to_sleep(mongo_db, influx_server="localhost", secondsback=7200):
             if vdata["state"] == "asleep":
                 ts_asleep = vdata["timestamp"]
 
-                tesladata.influx_write(
+                influx_write(
                     servername=influx_server,
                     measurement="custom_data",
                     entity="sleepy_to_sleep",
