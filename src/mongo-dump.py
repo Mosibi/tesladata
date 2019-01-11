@@ -33,16 +33,19 @@ def print_collection(collection, diff=False):
         try:
             if diff is True:
                 for key in doc:
-                    if docdiff(doc[key], prev_doc[key]) is not True and not (
-                        key == "timestamp" or key == "gps_as_of"
-                    ):
-                        # timestamp and gps_as_of are timestamps, those are most of the times different
-                        # so let's skip them
-                        print(
-                            "diffent {}: {} vs previous {}".format(
-                                key, doc[key], prev_doc[key]
+                    try:
+                        if docdiff(doc[key], prev_doc[key]) is not True and not (
+                            key == "timestamp" or key == "gps_as_of"
+                        ):
+                            # timestamp and gps_as_of are timestamps, those are most of the times different
+                            # so let's skip them
+                            print(
+                                "diffent {}: {} vs previous {}".format(
+                                    key, doc[key], prev_doc[key]
+                                )
                             )
-                        )
+                    except KeyError as key:
+                        print("found new key!: {}".format(key))
         except UnboundLocalError:
             pass
 
