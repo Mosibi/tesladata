@@ -53,7 +53,7 @@ def vehicle(server, data):
 
 
 def custom_data(server, data):
-    try:
+    if 'sleepy' in data:
         if data["sleepy"] is True:
             tesladata.influx_write(
                 servername=server,
@@ -63,9 +63,17 @@ def custom_data(server, data):
                 value=1,
                 ms=data["timestamp"],
             )
-    except KeyError:
-        pass
-
+    
+    if 'est_ideal_maxrange' in data:
+        tesladata.influx_write(
+            servername=server,
+            measurement="custom_data",
+            entity="est_ideal_maxrange",
+            vin=data["vin"],
+            value=data["est_ideal_maxrange"],
+            ms=data["timestamp"],
+        )
+    
 
 def charge_state(server, data):
     tesladata.influx_write(

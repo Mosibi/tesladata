@@ -283,6 +283,48 @@ def get_all_cardata(vehicle):
         )
 
 
+def get_endpoint(vehicle, endpoint):
+    data = {}
+
+    try:
+        endpoint_data = vehicle.data_request(endpoint)
+        endpoint_data["vin"] = vehicle["vin"]
+
+        data.update({endpoint: endpoint_data})
+
+    except Exception as err:
+        log(
+            "Could not get data from Tesla with vin {}: {}".format(
+                vehicle["vin"], str(err)
+            ),
+            level="WARNING",
+        )
+
+    return data
+
+
+def get_est_ideal_maxrange(charge_state):
+    """
+    Calculate the maxrange based on the current charge level
+    and ideal_battery_range
+    """
+    est_ideal_maxrange = 0
+
+    try:
+        ideal_battery_range = charge_state["ideal_battery_range"] * 1.609344
+        est_ideal_maxrange = (ideal_battery_range / charge_state["battery_level"]) * 100
+    except KeyError:
+        log("missing charge_data value, cannot compute maxrange", level="ERROR")
+
+    output = {
+        "timestamp": charge_state["timestamp"],
+        "est_ideal_maxrange": est_ideal_maxrange,
+        "vin": charge_state["vin"],
+    }
+
+    return output
+
+
 def sleepy_to_sleep(mongo_db, influx_server="localhost", secondsback=7200):
     """
     sleepy_to_sleep calculates the difference in seconds between

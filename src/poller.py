@@ -70,10 +70,17 @@ def poller(vehicle, last_time_sleepy, mongo_db):
                     db=mongo_db, collection_name=endpoint, json_data=car_data[endpoint]
                 )
 
-            """
-            Detect if the car want's to go to sleep. If the car is charging we keep polling it,
-            preventing it to go to sleep.
-            """
+            # The function tesladata.get_est_ideal_maxrange measures the estimated ideal
+            # maxrange and returns a dict that we can insert in the custom_data
+            # collection in Mongo
+            mongo_write(
+                db=mongo_db,
+                collection_name="custom_data",
+                json_data=tesladata.get_est_ideal_maxrange(charge_state),
+            )
+
+            # Detect if the car want's to go to sleep. If the car is charging we keep polling it,
+            # preventing it to go to sleep.
             if (
                 sleepy(car_data["drive_state"]) is True
                 and charge_state["charging_state"] != "Charging"
