@@ -26,8 +26,33 @@ def climate_state(server, data):
 
 
 def drive_state(server, data):
-    pass
-
+    tesladata.influx_write(
+        servername=server,
+        measurement="drive_state",
+        entity="power",
+        vin=data["vin"],
+        value=data["power"],
+        ms=data["timestamp"],
+    )
+    
+    tesladata.influx_write(
+        servername=server,
+        measurement="drive_state",
+        entity="speed",
+        vin=data["vin"],
+        value=data["speed"],
+        ms=data["timestamp"],
+    )
+    
+    tesladata.influx_write(
+        servername=server,
+        measurement="drive_state_txt",
+        entity="shift_state",
+        vin=data["vin"],
+        value=data["shift_state"],
+        ms=data["timestamp"],
+    )
+ 
 
 def gui_settings(server, data):
     pass
