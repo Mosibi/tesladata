@@ -54,7 +54,7 @@ def main():
         secondsback=secondsback,
     )
 
-    for collection in ["charge_state", "vehicle", "custom_data", "vehicle_state"]:
+    for collection in ["charge_state", "vehicle", "custom_data", "vehicle_state", "climate_state"]:
         debug("Working on collection {}".format(collection))
 
         mongo_documents = tesladata.get_mongo_data(
