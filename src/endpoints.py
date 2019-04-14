@@ -37,8 +37,8 @@ def drive_state(server, data):
         ms=data["timestamp"],
     )
 
-    if data["drive_state"] is None:
-        data["drive_state"] = 0
+    if data["speed"] is None:
+        data["speed"] = 0
     tesladata.influx_write(
         servername=server,
         measurement="drive_state",
