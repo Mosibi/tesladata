@@ -6,6 +6,7 @@ install:
 	@test -e /usr/local/tesladata || mkdir /usr/local/tesladata
 	@cp src/poller.py /usr/local/tesladata/poller.py
 	@cp src/tesladata.py /usr/local/tesladata/tesladata.py
+	@cp src/teslajson.py /usr/local/tesladata/teslajson.py
 	@cp src/mongo-to-influxdb.py /usr/local/tesladata/mongo-to-influxdb.py
 	@cp src/mongo-watcher.py /usr/local/tesladata/mongo-watcher.py
 	@cp src/endpoints.py /usr/local/tesladata/endpoints.py

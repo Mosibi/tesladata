@@ -62,3 +62,7 @@ optional arguments:
 
 ## sleepy-to-sleeping.py
 Measures the time between state 'sleepy' and 'asleep' and inserts the results in InfluxDB. Run this once per hour, missing datapoints can be inserted by running `mongo-to-influxdb.py`
+
+# Libraries
+## teslajson.py
+teslajson.py is imported from https://github.com/gglockner/teslajson and modified to not depend on pastebin.com anymore.
