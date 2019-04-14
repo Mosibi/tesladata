@@ -138,6 +138,9 @@ def influx_write(**kwargs):
     ms = int(kwargs.get("ms", int(time.time() * 1000)))
 
     try:
+        if isinstance(value, str):
+            value = '"{}"'.format(value)
+
         binary_data = "{0},entity={1},vin={2} value={3} {4}".format(
             measurement, entity, vin, value, ms
         )

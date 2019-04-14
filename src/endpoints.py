@@ -37,28 +37,15 @@ def vehicle_state(server, data):
 
 
 def vehicle(server, data):
-    sleeping = 0
-
-    if data["state"] == "asleep":
-        sleeping = 1
-
     tesladata.influx_write(
         servername=server,
-        measurement="vehicle_state",
+        measurement="vehicle_state_txt",
         entity="sleeping",
-        vin=data["vin"],
-        value=sleeping,
-        ms=data["timestamp"],
-    )
-
-    tesladata.influx_write(
-        servername=server,
-        measurement="vehicle_state",
-        entity="state",
         vin=data["vin"],
         value=data["state"],
         ms=data["timestamp"],
     )
+
 
 def custom_data(server, data):
     if 'sleepy' in data:
