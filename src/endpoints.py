@@ -51,6 +51,14 @@ def vehicle(server, data):
         ms=data["timestamp"],
     )
 
+    tesladata.influx_write(
+        servername=server,
+        measurement="vehicle_state",
+        entity="state",
+        vin=data["vin"],
+        value=data["state"],
+        ms=data["timestamp"],
+    )
 
 def custom_data(server, data):
     if 'sleepy' in data:
