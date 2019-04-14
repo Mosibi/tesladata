@@ -40,7 +40,7 @@ def vehicle(server, data):
     tesladata.influx_write(
         servername=server,
         measurement="vehicle_state_txt",
-        entity="sleeping",
+        entity="state",
         vin=data["vin"],
         value=data["state"],
         ms=data["timestamp"],
