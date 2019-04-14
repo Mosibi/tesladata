@@ -101,15 +101,8 @@ class Connection(object):
 
         _url = '{}{}'.format(baseurl, url)
         req = Request(_url, headers=headers)
-    
-        try:
-            req.data = urlencode(data).encode('utf-8') # Python 3
-        except:
-            try:
-                req.add_data(urlencode(data)) # Python 2
-            except:
-                pass
-
+        req.data = urlencode(data).encode('utf-8') # Python 3
+        
         # Proxy support
         if self.proxy_url:
             if self.proxy_user:
@@ -347,7 +340,7 @@ def mongo_write(db=None, collection_name=None, json_data=None):
     collection = db[collection_name]
 
     try:
-        result = collection.insert_one(json_data)
+        collection.insert_one(json_data)
     except Exception as err:
         log(
             "An error occured while writing data to Mongo, {}".format(err),
