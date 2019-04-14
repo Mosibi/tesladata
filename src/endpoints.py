@@ -26,6 +26,8 @@ def climate_state(server, data):
 
 
 def drive_state(server, data):
+    if data["power"] is None:
+        data["power"] = 0
     tesladata.influx_write(
         servername=server,
         measurement="drive_state",
@@ -34,7 +36,9 @@ def drive_state(server, data):
         value=data["power"],
         ms=data["timestamp"],
     )
-    
+
+    if data["drive_state"] is None:
+        data["drive_state"] = 0
     tesladata.influx_write(
         servername=server,
         measurement="drive_state",
