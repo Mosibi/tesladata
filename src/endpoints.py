@@ -133,3 +133,21 @@ def charge_state(server, data):
         value=float(data["ideal_battery_range"] * 1.609344),
         ms=data["timestamp"],
     )
+
+    tesladata.influx_write(
+        servername=server,
+        measurement="charge_state",
+        entity="est_battery_range",
+        vin=data["vin"],
+        value=float(data["est_battery_range"] * 1.609344),
+        ms=data["timestamp"],
+    )
+
+    tesladata.influx_write(
+        servername=server,
+        measurement="charge_state",
+        entity="battery_range",
+        vin=data["vin"],
+        value=float(data["battery_range"] * 1.609344),
+        ms=data["timestamp"],
+    )
