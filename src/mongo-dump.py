@@ -40,8 +40,8 @@ def print_collection(collection, diff=False):
                             # timestamp and gps_as_of are timestamps, those are most of the times different
                             # so let's skip them
                             print(
-                                "diffent {}: {} vs previous {}".format(
-                                    key, doc[key], prev_doc[key]
+                                "different {} {}: {} vs previous {}".format(
+                                    doc["timestamp"], key, doc[key], prev_doc[key]
                                 )
                             )
                     except KeyError as key:
