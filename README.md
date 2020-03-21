@@ -19,6 +19,24 @@ Clone this repo and run `pip install -r requirements.txt` in the tesladata direc
 
 Run `make install` to install Tesladata on your system and start the poller service with the command `systemctl start tesladata-poller.service`
 
+Or build a container `podman build -t tesladata:0.2 .` and start it like this
+
+```lang=shell
+podman run \
+  -e USERNAME="<your tesla account e-mail address" \
+  -e PASSWORD="<password tesla account>" \
+  -e VIN="<vin>" \
+  -e INFLUX_SERVER="influx.example.com" \
+  -e MONGO_SERVER="mongo.example.com" \
+  -e MQTT_SERVER="mqtt.example.com" \
+  -e MQTT_USERNAME="mqtt" \
+  -e MQTT_PASSWORD="<mqtt password>" \
+  --rm \
+  --name tesladata \
+  tesladata:0.1
+```
+See the Containerfile for all environment settings
+
 # MongoDB
 Running a MongoDB can easily be done as a Docker container. To run a test database (the data will be lost when the container is stopped):
 
